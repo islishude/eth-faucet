@@ -2,7 +2,6 @@ language: "go"
 go:
   - "1.11"
   - "1.12"
-  - "tip"
 git:
   depth: 1
 before_script:
