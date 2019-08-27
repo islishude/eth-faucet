@@ -1,7 +1,5 @@
 Ropsten Ethereum Faucet Tool [![Build Status](https://travis-ci.org/islishude/eth-faucet.svg?branch=master)](https://travis-ci.org/islishude/eth-faucet)
 
-# Usage
-
 ```console
 $ go get -v -u github.com/islishude/eth-faucet
 $ eth-faucet -address=0x0581a31Bc9d1c030B004951D8bC520A07fcb3897

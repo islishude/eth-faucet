@@ -65,4 +65,5 @@ func main() {
 		return
 	}
 	out.WriteTo(os.Stdout)
+	fmt.Println()
 }
