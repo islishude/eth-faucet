@@ -1,39 +1,27 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"regexp"
 )
 
-const api = "https://faucet.ropsten.be/donate/"
-
-var ethAddrRegExp = regexp.MustCompile(`^0x[0-9a-fA-F]{40}$`)
-
 func checkEthAddress(address string) bool {
-	return ethAddrRegExp.MatchString(address)
+	return regexp.MustCompile(`^0x[0-9a-fA-F]{40}$`).MatchString(address)
 }
 
-var (
-	address string
-	help    bool
-)
-
 func main() {
-	flag.StringVar(&address, "address", "", "Your ethereum address")
-	flag.BoolVar(&help, "help", false, "Print help text")
-	flag.Parse()
-
-	if help {
-		flag.Usage()
+	if len(os.Args) != 2 {
+		fmt.Println(`ropsten eth faucet
+		example:
+		
+		$ eth-faucet 0x0581a31Bc9d1c030B004951D8bC520A07fcb3897`)
 		return
 	}
 
+	address := os.Args[1]
 	if address == "" {
 		fmt.Println("address is empty")
 		return
@@ -44,26 +32,12 @@ func main() {
 		return
 	}
 
-	url := fmt.Sprintf("%s%s", api, address)
-
-	resp, err := http.Get(url)
+	const api = "https://faucet.ropsten.be/donate/"
+	resp, err := http.Get(api + address)
 	if err != nil {
 		fmt.Println("Request error", err)
 		return
 	}
 	defer resp.Body.Close()
-
-	res, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Response error", err)
-		return
-	}
-
-	var out bytes.Buffer
-	if err := json.Indent(&out, res, "", "  "); err != nil {
-		fmt.Println("Format response error", err)
-		return
-	}
-	out.WriteTo(os.Stdout)
-	fmt.Println()
+	_, _ = io.Copy(os.Stdout, resp.Body)
 }
